@@ -1,0 +1,63 @@
+version: '3.7'
+
+services:
+  omp3:
+    #ports:
+      #- "4444:8000"
+      #- "443:443"
+    environment:
+      ADMIN_USER_FILE: /run/secrets/admin_user
+      ADMIN_PASSWORD_FILE: /run/secrets/admin_password
+      ADMIN_EMAIL_FILE: /run/secrets/admin_email
+      MYSQL_USER_FILE: /run/secrets/mysql_user
+      MYSQL_PASSWORD_FILE: /run/secrets/mysql_password
+      MYSQL_DB_FILE: /run/secrets/mysql_db
+      OMP_BRANCH: "stable-3_1_2"
+    secrets:
+      - admin_user
+      - admin_password
+      - admin_email
+      - mysql_user
+      - mysql_password
+      - mysql_db
+    networks:
+      - backend
+      - frontend
+    deploy:
+      labels:
+        - "traefik.enable=true"
+        - "traefik.frontend.rule=Host:omp.test.idai.world"
+        #- "traefik.frontend.rule=Host:omp.localhost"
+        - "traefik.passHostHeader=true"
+        - "traefik.port=8000"
+      restart_policy:
+        condition: any
+        delay: 0s
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+        mode: "non-blocking"
+
+secrets:
+  admin_user:
+    file: secrets/admin_user.txt
+  admin_password:
+    file: secrets/admin_password.txt
+  admin_email:
+    file: secrets/admin_email.txt
+  mysql_user:
+    file: secrets/mysql_user.txt
+  mysql_password:
+    file: secrets/mysql_password.txt
+  mysql_db:
+    file: secrets/mysql_db.txt
+
+networks:
+  backend:
+    name: backend
+    external: true
+  frontend:
+    name: frontend
+    external: true
