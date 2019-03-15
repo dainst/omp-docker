@@ -146,7 +146,8 @@ RUN chgrp -f -R www-data www && \
 ### Install OMP ###
 WORKDIR /var/www
 RUN service mysql start && expect /root/ompInstall.exp ${ADMIN_USER} ${ADMIN_PASSWORD} ${ADMIN_EMAIL} ${MYSQL_USER} ${MYSQL_PASSWORD} ${MYSQL_DB}
-RUN git clone https://github.com/dainst/ojs-config-tool ompconfig
+
+# Install OMP Plugins
 WORKDIR html/plugins
 ##RUN git clone --single-branch -b ${OMP_BRANCH} https://github.com/asmecher/texture generic/texture TODO include texture 4 omp
 ##RUN git submodule update --init --recursive
@@ -155,16 +156,16 @@ WORKDIR html/plugins
 ##    chmod g+s generic/texture && \
 ##    setfacl -Rm o::x,d:o::x generic/texture && \
 ##    setfacl -Rm g::rwx,d:g::rwx generic/texture
-#RUN service mysql start && php /var/www/ompconfig/omp3.php
-# i think this has to be done after plugin install
 
-# Install OMP Plugins
+
+
 WORKDIR /var/www/html/plugins
 RUN git clone -b omp3 https://github.com/dainst/ojs-cilantro-plugin.git generic/ojs-cilantro-plugin
 RUN git clone -b omp3 https://github.com/dainst/ojs-zenon-plugin.git pubIds/zenon
 #RUN git clone -b omp3 https://github.com/dainst/epicur.git oaiMetadataFormats/epicur
 RUN git submodule update --init --recursive
 
+# set file rights
 WORKDIR /var/www/html/
 RUN chgrp -f -R www-data plugins && \
     chmod -R 771 plugins && \
@@ -180,6 +181,9 @@ RUN chgrp -f -R www-data tmp && \
     setfacl -Rm o::x,d:o::x tmp && \
     setfacl -Rm g::rwx,d:g::rwx tmp
 
+# config OMP
+RUN git clone https://github.com/dainst/ojs-config-tool ompconfig
+RUN service mysql start && php /var/www/ompconfig/omp3.php
 RUN sed -i 's/allowProtocolRelative = false/allowProtocolRelative = true/' /var/www/html/lib/pkp/classes/core/PKPRequest.inc.php
 
 COPY ./docker-entrypoint.sh /usr/local/bin/
