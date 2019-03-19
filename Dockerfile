@@ -145,7 +145,8 @@ RUN chgrp -f -R www-data www && \
 
 ### Install OMP ###
 WORKDIR /var/www
-RUN service mysql start && expect /root/ompInstall.exp ${ADMIN_USER} ${ADMIN_PASSWORD} ${ADMIN_EMAIL} ${MYSQL_USER} ${MYSQL_PASSWORD} ${MYSQL_DB}
+RUN service mysql start && \
+    expect /root/ompInstall.exp ${ADMIN_USER} ${ADMIN_PASSWORD} ${ADMIN_EMAIL} ${MYSQL_USER} ${MYSQL_PASSWORD} ${MYSQL_DB}
 
 # Install OMP Plugins
 WORKDIR html/plugins
@@ -183,7 +184,8 @@ RUN chgrp -f -R www-data tmp && \
 
 # config OMP
 RUN git clone https://github.com/dainst/ojs-config-tool ompconfig
-RUN service mysql start && php /var/www/ompconfig/omp3.php
+RUN service mysql start && \
+    php -d display_errors=on /var/www/ompconfig/omp3.php
 RUN sed -i 's/allowProtocolRelative = false/allowProtocolRelative = true/' /var/www/html/lib/pkp/classes/core/PKPRequest.inc.php
 
 COPY ./docker-entrypoint.sh /usr/local/bin/
