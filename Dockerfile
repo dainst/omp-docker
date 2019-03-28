@@ -149,44 +149,48 @@ RUN service mysql start && \
     expect /root/ompInstall.exp ${ADMIN_USER} ${ADMIN_PASSWORD} ${ADMIN_EMAIL} ${MYSQL_USER} ${MYSQL_PASSWORD} ${MYSQL_DB}
 
 # Install OMP Plugins
-WORKDIR html/plugins
-##RUN git clone --single-branch -b ${OMP_BRANCH} https://github.com/asmecher/texture generic/texture TODO include texture 4 omp
-##RUN git submodule update --init --recursive
-##RUN chgrp -f -R www-data generic/texture && \
-##    chmod -R 771 generic/texture && \
-##    chmod g+s generic/texture && \
-##    setfacl -Rm o::x,d:o::x generic/texture && \
-##    setfacl -Rm g::rwx,d:g::rwx generic/texture
-
-
-
 WORKDIR /var/www/html/plugins
-RUN git clone -b omp3 https://github.com/dainst/ojs-cilantro-plugin.git generic/ojs-cilantro-plugin
+RUN git clone -b omp3 https://github.com/dainst/ojs-cilantro-plugin.git generic/omp-cilantro-plugin && \
+    cd generic/omp-cilantro-plugin && \
+    git submodule update --init --recursive
 RUN git clone -b omp3 https://github.com/dainst/ojs-zenon-plugin.git pubIds/zenon
 #RUN git clone -b omp3 https://github.com/dainst/epicur.git oaiMetadataFormats/epicur
-RUN git submodule update --init --recursive
-
-# set file rights
-WORKDIR /var/www/html/
-RUN chgrp -f -R www-data plugins && \
-    chmod -R 771 plugins && \
-    chmod g+s plugins && \
-    setfacl -Rm o::x,d:o::x plugins && \
-    setfacl -Rm g::rwx,d:g::rwx plugins
-
-RUN mkdir /var/www/tmp
-WORKDIR /var/www
-RUN chgrp -f -R www-data tmp && \
-    chmod -R 771 tmp && \
-    chmod g+s tmp && \
-    setfacl -Rm o::x,d:o::x tmp && \
-    setfacl -Rm g::rwx,d:g::rwx tmp
+RUN git clone -b omp3.2 https://github.com/dainst/omp-dainst-nav-block blocks/omp-dainst-nav-block
+RUN git clone https://github.com/dainst/omp-dainst-theme themes/omp-dainst-theme && \
+    cd themes/omp-dainst-theme && \
+    git submodule update --init --recursive
 
 # config OMP
+WORKDIR /var/www
 RUN git clone https://github.com/dainst/ojs-config-tool ompconfig
 RUN service mysql start && \
-    php -d display_errors=on /var/www/ompconfig/omp3.php
+    php /var/www/ompconfig/omp3.php --press.theme=omp-dainst-theme --theme=omp-dainst-theme --press.plugins=themes/omp-dainst-theme,blocks/omp-dainst-nav-block
 RUN sed -i 's/allowProtocolRelative = false/allowProtocolRelative = true/' /var/www/html/lib/pkp/classes/core/PKPRequest.inc.php
+
+# set file rights
+RUN chgrp -f -R www-data html/plugins && \
+    chmod -R 771 html/plugins && \
+    chmod g+s html/plugins && \
+    setfacl -Rm o::x,d:o::x html/plugins && \
+    setfacl -Rm g::rwx,d:g::rwx html/plugins
+
+RUN chgrp -f -R www-data html/cache && \
+    chmod -R 771 html/cache && \
+    chmod g+s html/cache && \
+    setfacl -Rm o::x,d:o::x html/cache && \
+    setfacl -Rm g::rwx,d:g::rwx html/cache
+
+RUN chgrp -f -R www-data html/public && \
+    chmod -R 771 html/public && \
+    chmod g+s html/public && \
+    setfacl -Rm o::x,d:o::x html/public && \
+    setfacl -Rm g::rwx,d:g::rwx html/public
+
+RUN chgrp -f -R www-data ompfiles && \
+    chmod -R 771 ompfiles && \
+    chmod g+s ompfiles && \
+    setfacl -Rm o::x,d:o::x ompfiles && \
+    setfacl -Rm g::rwx,d:g::rwx ompfiles
 
 COPY ./docker-entrypoint.sh /usr/local/bin/
 ENTRYPOINT ["docker-entrypoint.sh"]
