@@ -37,6 +37,7 @@ RUN add-apt-repository 'deb [arch=amd64,i386,ppc64el] http://mirrors.dotsrc.org/
 RUN wget -q -O- https://packages.sury.org/php/apt.gpg | apt-key add -
 RUN echo "deb https://packages.sury.org/php/ stretch main" | tee /etc/apt/sources.list.d/php.list
 
+### install packages ###
 RUN apt-get update && apt-get install -y \
     bash-completion \
     ca-certificates \
@@ -63,13 +64,10 @@ RUN apt-get update && apt-get install -y \
     acl \
     build-essential \
     cron \
-    exiftool \
     expect \
     git \
-    imagemagick \
     libssl-dev \
     nano \
-    pdftk \
     supervisor \
     unzip
 
@@ -89,9 +87,11 @@ COPY conf/omp-apache.conf /etc/apache2/conf-available
 COPY conf/omp-ssl-site.conf /etc/apache2/sites-available
 COPY conf/omp-site.conf /etc/apache2/sites-available
 COPY conf/.htpasswd /etc/apache2/
+
 # Ports
 RUN sed -i "s/^Listen 80.*\$/Listen $OMP_PORT/" /etc/apache2/ports.conf
 RUN sed -i "s/^<VirtualHost \*:80>.*\$/<VirtualHost \*:$OMP_PORT>/" /etc/apache2/sites-available/omp-site.conf
+
 # Adding SSL keys and set access rights them
 COPY ssl/apache.crt /etc/apache2/ssl
 COPY ssl/apache.key /etc/apache2/ssl
@@ -104,7 +104,7 @@ RUN echo "#!/bin/sh\nif [ -s /etc/apache2/sites-available/omp-ssl-site.conf ]; t
 RUN ln -sf /dev/stdout /var/log/apache2/access.log \
     && ln -sf /dev/stderr /var/log/apache2/error.log
 
-# configure git for Entrypoint script
+# configure git
 RUN git config --global url.https://.insteadOf git://
 RUN git config --global advice.detachedHead false
 
@@ -119,7 +119,7 @@ RUN service mysql start && \
     echo "CREATE DATABASE ${MYSQL_DB};" | mysql -u root && \
     echo "GRANT ALL PRIVILEGES on ${MYSQL_DB}.* TO '${MYSQL_USER}'@'localhost'; FLUSH PRIVILEGES;" | mysql -u root
 
-### Initialize OMP repo ###
+### Install OMP ###
 RUN mkdir -p /var/www/ompfiles
 WORKDIR /var/www/html
 RUN rm index.html
@@ -129,13 +129,18 @@ RUN git init && \
     git checkout --track origin/${OMP_BRANCH}
 RUN git submodule update --init --recursive
 
+# php modules
 RUN composer install -v -d lib/pkp --no-dev
 RUN composer install -v -d plugins/paymethod/paypal --no-dev
 
+# js modules
 RUN npm install -y
 RUN npm run build
 
+# config file
 RUN cp config.TEMPLATE.inc.php config.inc.php
+
+# initial file rights
 WORKDIR /var
 RUN chgrp -f -R www-data www && \
     chmod -R 771 www && \
@@ -143,31 +148,32 @@ RUN chgrp -f -R www-data www && \
     setfacl -Rm o::x,d:o::x www && \
     setfacl -Rm g::rwx,d:g::rwx www
 
-### Install OMP ###
+# run installer
 WORKDIR /var/www
 RUN service mysql start && \
     expect /root/ompInstall.exp ${ADMIN_USER} ${ADMIN_PASSWORD} ${ADMIN_EMAIL} ${MYSQL_USER} ${MYSQL_PASSWORD} ${MYSQL_DB}
 
-# Install OMP Plugins
+### Install OMP Plugins ###
 WORKDIR /var/www/html/plugins
 RUN git clone -b omp3 https://github.com/dainst/ojs-cilantro-plugin.git generic/omp-cilantro-plugin && \
     cd generic/omp-cilantro-plugin && \
     git submodule update --init --recursive
 RUN git clone -b omp3 https://github.com/dainst/ojs-zenon-plugin.git pubIds/zenon
-#RUN git clone -b omp3 https://github.com/dainst/epicur.git oaiMetadataFormats/epicur
+#RUN git clone -b omp3 https://github.com/dainst/epicur.git oaiMetadataFormats/epicur TODO has to be developed
 RUN git clone -b omp3.2 https://github.com/dainst/omp-dainst-nav-block blocks/omp-dainst-nav-block
 RUN git clone https://github.com/dainst/omp-dainst-theme themes/omp-dainst-theme && \
     cd themes/omp-dainst-theme && \
     git submodule update --init --recursive
 
-# config OMP
+### configurate OMP ###
 WORKDIR /var/www
 RUN git clone https://github.com/dainst/ojs-config-tool ompconfig
 RUN service mysql start && \
     php /var/www/ompconfig/omp3.php --press.theme=omp-dainst-theme --theme=omp-dainst-theme --press.plugins=themes/omp-dainst-theme,blocks/omp-dainst-nav-block
 RUN sed -i 's/allowProtocolRelative = false/allowProtocolRelative = true/' /var/www/html/lib/pkp/classes/core/PKPRequest.inc.php
 
-# set file rights
+# set file rights (after configuration and installation!)
+WORKDIR /var/www
 RUN chgrp -f -R www-data html/plugins && \
     chmod -R 771 html/plugins && \
     chmod g+s html/plugins && \
@@ -192,6 +198,7 @@ RUN chgrp -f -R www-data ompfiles && \
     setfacl -Rm o::x,d:o::x ompfiles && \
     setfacl -Rm g::rwx,d:g::rwx ompfiles
 
+### go ###
 COPY ./docker-entrypoint.sh /usr/local/bin/
 ENTRYPOINT ["docker-entrypoint.sh"]
 
