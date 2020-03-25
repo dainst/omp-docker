@@ -17,15 +17,4 @@ services:
         <<: *env
     image: dainst/cilantro-omp3
     ports:
-      - "4444:8000"
-    environment:
-      <<: *env
-    volumes:
-      - mysqlvolume:/var/lib/mysql
-      - appvolume:/var/www/html
-      - filesvolume:/var/www/ompfiles
-
-volumes:
-  mysqlvolume:
-  appvolume:
-  filesvolume:
+      - "4444:80"
