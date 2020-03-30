@@ -1,5 +1,9 @@
 # Creating a new database
 
+## Initialize the submodules
+
+git submodule update --init --recursive
+
 ## Setup the omp container
 
 docker-compose -f docker-compose.install.yml build
