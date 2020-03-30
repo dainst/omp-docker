@@ -1,0 +1,18 @@
+version: '3.7'
+
+x-env: &env
+  MYSQL_USER: omp
+  MYSQL_PASSWORD: omp
+  MYSQL_DB: omp
+
+services:
+  omp3:
+    container_name: omp_install
+    build:
+      context: .
+      dockerfile: Dockerfile-install
+      args:
+        <<: *env
+    image: dainst/cilantro-omp3
+    ports:
+      - "4444:80"
