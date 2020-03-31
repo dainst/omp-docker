@@ -6,7 +6,7 @@ There are two docker configurations:
 
 ## Initialize the submodules
 
-git submodule update --init --recursive
+`git submodule update --init --recursive`
 
 ## 1. New OMP instance
 
