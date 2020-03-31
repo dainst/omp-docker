@@ -20,6 +20,7 @@ if [ ! -f /var/www/html/config.inc.php ]; then
     # configuration
     cp config.TEMPLATE.inc.php config.inc.php
     sed -i 's/installed = Off/installed = On/' config.inc.php
+    sed -i 's|base_url = "https://publications.dainst.org/books"|base_url = "http://localhost:4444"|' config.inc.php
 	sed -i 's/allowProtocolRelative = false/allowProtocolRelative = true/' /var/www/html/lib/pkp/classes/core/PKPRequest.inc.php # TODO: ammend repository and remove this sed?
     sed -i "s|return Core::getBaseDir() . DIRECTORY_SEPARATOR . 'cache';|return '/tmp/cache';|" /var/www/html/lib/pkp/classes/cache/CacheManager.inc.php # TODO: ammend repository and remove this sed? probably best to read an environment variable in PHP
 
