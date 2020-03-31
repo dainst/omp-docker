@@ -18,7 +18,7 @@ There are two docker configurations:
 
 ### Installation 
 
-Open [localhost:4444](localhost:4444) and follow the installation.
+Open [localhost:4444](http://localhost:4444) and follow the installation.
 
 Important:
 * Use mysqli instead of mysql
@@ -39,5 +39,5 @@ The scripts expects a OMP mysqldump in [mysql_data](mysql_data) named `omp.sql`.
 
 `docker-compose up`
 
-Open [localhost:4444](localhost:4444), you should be able to login. Changes on the host system should be applied in the 
+Open [localhost:4444](http://localhost:4444), you should be able to login. Changes on the host system should be applied in the 
 running instance.
