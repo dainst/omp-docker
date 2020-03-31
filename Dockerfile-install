@@ -133,7 +133,7 @@ RUN chgrp -f -R www-data files && \
     setfacl -Rm g::rwx,d:g::rwx files
 
 ### go ###
-COPY ./docker-entrypoint.sh /usr/local/bin/
-ENTRYPOINT ["docker-entrypoint.sh"]
+COPY ./docker-entrypoint-install.sh /usr/local/bin/
+ENTRYPOINT ["docker-entrypoint-install.sh"]
 
 EXPOSE 80
