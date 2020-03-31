@@ -6,7 +6,7 @@ x-env: &env
   MYSQL_DB: omp
 
 services:
-  omp3:
+  omp_install:
     container_name: omp_install
     build:
       context: .
