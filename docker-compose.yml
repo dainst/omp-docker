@@ -4,10 +4,6 @@ x-env: &env
   MYSQL_USER: omp
   MYSQL_PASSWORD: omp
   MYSQL_DB: omp
-  OMP_BRANCH: stable-3_1_2
-  ADMIN_USER: admin
-  ADMIN_PASSWORD: password
-  ADMIN_EMAIL: dummy@address.local
 
 services:
   omp3:
@@ -16,5 +12,7 @@ services:
       args:
         <<: *env
     image: dainst/cilantro-omp3
+    volumes:
+    - ./omp:/var/www/html
     ports:
       - "4444:80"
