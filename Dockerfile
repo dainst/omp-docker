@@ -111,6 +111,8 @@ RUN chgrp -f -R www-data files && \
 RUN mkdir -p /tmp/cache
 RUN chown www-data:www-data /tmp/cache
 
+RUN a2enmod rewrite
+
 ### go ###
 COPY ./docker-entrypoint.sh /usr/local/bin/
 ENTRYPOINT ["docker-entrypoint.sh"]

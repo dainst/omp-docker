@@ -132,6 +132,8 @@ RUN chgrp -f -R www-data files && \
     setfacl -Rm o::x,d:o::x files && \
     setfacl -Rm g::rwx,d:g::rwx files
 
+RUN a2enmod rewrite
+
 ### go ###
 COPY ./docker-entrypoint-install.sh /usr/local/bin/
 ENTRYPOINT ["docker-entrypoint-install.sh"]
