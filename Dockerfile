@@ -78,7 +78,12 @@ RUN service mysql start && \
     echo "CREATE USER '${MYSQL_USER}'@'localhost' IDENTIFIED BY '${MYSQL_PASSWORD}';" | mysql -u root && \
     echo "UPDATE mysql.user SET plugin = 'mysql_native_password' WHERE User='${MYSQL_USER}'; FLUSH PRIVILEGES;" | mysql -u root && \
     echo "CREATE DATABASE ${MYSQL_DB};" | mysql -u root && \
-    echo "GRANT ALL PRIVILEGES on ${MYSQL_DB}.* TO '${MYSQL_USER}'@'localhost'; FLUSH PRIVILEGES;" | mysql -u root
+    echo "GRANT ALL PRIVILEGES on ${MYSQL_DB}.* TO '${MYSQL_USER}'@'localhost'; FLUSH PRIVILEGES;" | mysql -u root && \
+    echo "CREATE USER '${MYSQL_USER}'@'%' IDENTIFIED BY '${MYSQL_PASSWORD}';" | mysql -u root && \
+    echo "GRANT ALL PRIVILEGES on ${MYSQL_DB}.* TO '${MYSQL_USER}'@'%' WITH GRANT OPTION; FLUSH PRIVILEGES;" | mysql -u root
+
+# Do not restrict mysql access to internal connections
+RUN sed -i 's|bind-address            = 127.0.0.1|bind-address            = 0.0.0.0|' /etc/mysql/mariadb.conf.d/50-server.cnf
 
 RUN service mysql start && mysql -u root ${MYSQL_DB} < /mysql_import/omp.sql
 
