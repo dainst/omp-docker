@@ -12,7 +12,10 @@ services:
       args:
         <<: *env
     image: dainst/cilantro-omp3
+    environment:
+      <<: *env
     volumes:
     - ./omp:/var/www/html
     ports:
       - "4444:80"
+      - "4443:3306"

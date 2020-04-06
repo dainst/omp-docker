@@ -117,4 +117,4 @@ RUN a2enmod rewrite
 COPY ./docker-entrypoint.sh /usr/local/bin/
 ENTRYPOINT ["docker-entrypoint.sh"]
 
-EXPOSE 80
+EXPOSE 80 3306
