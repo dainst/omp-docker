@@ -13,6 +13,8 @@ ARG MYSQL_USER
 ARG MYSQL_PASSWORD
 ARG MYSQL_DB
 
+RUN mv "$PHP_INI_DIR/php.ini-development" "$PHP_INI_DIR/php.ini"
+
 ### Install packes needed for installing from custom repos ###
 RUN apt-get update && apt-get install -y \
     gnupg2 \
@@ -107,7 +109,7 @@ RUN chgrp -f -R www-data www && \
 # set file rights (after configuration and installation!)
 WORKDIR /var/www
 
-RUN chgrp -f -R www-data files && \
+RUN chown -f -R www-data:www-data files && \
     chmod -R 771 files && \
     chmod g+s files && \
     setfacl -Rm o::x,d:o::x files && \
