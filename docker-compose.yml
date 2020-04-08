@@ -6,7 +6,8 @@ x-env: &env
   MYSQL_DB: omp
 
 services:
-  omp3:
+  omp_dev:
+    container_name: omp_dev
     build:
       context: .
       args:
@@ -19,3 +20,9 @@ services:
     ports:
       - "4444:80"
       - "4443:3306"
+    networks:
+      - omp_dev_network
+
+networks:
+  omp_dev_network:
+    name: omp_dev_network
