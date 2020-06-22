@@ -26,8 +26,6 @@ if [ ! -f /var/www/html/config.inc.php ]; then
     sed -i "s|return Core::getBaseDir() . DIRECTORY_SEPARATOR . 'cache';|return '/tmp/cache';|" /var/www/html/lib/pkp/classes/cache/CacheManager.inc.php # TODO: ammend repository and remove this sed? probably best to read an environment variable in PHP
 
     chgrp -f -R www-data plugins
-    chmod -R 771 plugins
-    chmod g+s plugins
     setfacl -Rm o::x,d:o::x plugins
     setfacl -Rm g::rwx,d:g::rwx plugins
 
