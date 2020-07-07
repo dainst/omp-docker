@@ -43,5 +43,9 @@ The scripts expects a OMP mysqldump in [mysql_data](mysql_data) named `omp.sql`.
 
 `docker-compose up`
 
+Troubleshooting (Windows): standard_init_linux.go:211: exec user process caused "no such file or directory"
+* => change EOL conversion for docker-entrypoint.sh. and docker-entrypoint-install (sh) -> change from CRLF (Windows) to LF (Linux), 
+  s. https://stackoverflow.com/questions/51508150/standard-init-linux-go190-exec-user-process-caused-no-such-file-or-directory
+
 Open [localhost:4444](http://localhost:4444), you should be able to login. Changes on the host system should be applied in the 
 running instance.
