@@ -4,11 +4,11 @@ There are two docker configurations:
 1. Creating a new OMP instance using OMP's installation interface.
 2. Using a mysqldump of an existing OMP instance for development.
 
-## Initialize the submodules
+## 1. New OMP instance
+
+### Initialize the submodules
 
 `git submodule update --init --recursive`
-
-## 1. New OMP instance
 
 ### Setup the omp container
 
@@ -32,6 +32,10 @@ Important:
 ## 2. Using an previously exported database
 
 The scripts expects a OMP mysqldump in [mysql_data](mysql_data) named `omp.sql`.
+
+### Initialize the submodules
+
+`git submodule update --init --recursive`
 
 ### Setup the omp container
 
