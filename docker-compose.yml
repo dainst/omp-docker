@@ -17,6 +17,7 @@ services:
       <<: *env
     volumes:
     - ./omp:/var/www/html
+    - ./omp_repository:/var/www/files
     ports:
       - "4444:80"
       - "4443:3306"

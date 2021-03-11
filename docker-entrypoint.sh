@@ -29,6 +29,9 @@ if [ ! -f /var/www/html/config.inc.php ]; then
     setfacl -Rm o::x,d:o::x plugins
     setfacl -Rm g::rwx,d:g::rwx plugins
 
+    chown -f -R www-data /var/www/files
+    setfacl -Rm o::x,d:o::x /var/www/files
+    setfacl -Rm g::rwx,d:g::rwx /var/www/files
 fi
 
 apachectl -DFOREGROUND
