@@ -1,3 +1,7 @@
+# ⚠️ Deprecated ⚠️ #
+
+Replaced by https://github.com/dainst/publications-docker.
+
 # OMP Docker
 
 There are two docker configurations: 
